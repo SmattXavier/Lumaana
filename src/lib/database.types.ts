@@ -777,6 +777,31 @@ export type Database = {
           total_rooms: number
         }[]
       }
+      booking_summary: {
+        Args: { p_code: string }
+        Returns: {
+          adults: number
+          branch_address: string
+          branch_name: string
+          branch_phone: string
+          branch_slug: string
+          check_in: string
+          check_out: string
+          children: number
+          confirmation_code: string
+          created_at: string
+          currency: string
+          guest_email: string
+          guest_name: string
+          nightly_rate_kobo: number
+          nights: number
+          reservation_id: string
+          room_type: string
+          status: Database["public"]["Enums"]["reservation_status"]
+          total_kobo: number
+        }[]
+      }
+      branch_business_date: { Args: { p_branch: string }; Returns: string }
       branch_report: {
         Args: { p_from: string; p_to: string }
         Returns: {
@@ -790,6 +815,10 @@ export type Database = {
           room_revenue_kobo: number
           rooms: number
         }[]
+      }
+      business_day_summary: {
+        Args: { p_branch: string; p_date: string }
+        Returns: Json
       }
       can_access_branch: { Args: { p_branch: string }; Returns: boolean }
       check_in: {
@@ -815,6 +844,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      confirm_test_payment: { Args: { p_code: string }; Returns: string }
       create_desk_booking: {
         Args: {
           p_adults: number
@@ -855,7 +885,9 @@ export type Database = {
       is_hq: { Args: never; Returns: boolean }
       is_manager: { Args: never; Returns: boolean }
       is_staff: { Args: never; Returns: boolean }
+      lagos_today: { Args: never; Returns: string }
       my_guest_id: { Args: never; Returns: string }
+      pay_balance_test: { Args: { p_reservation: string }; Returns: number }
       post_charge: {
         Args: {
           p_description: string
@@ -876,6 +908,10 @@ export type Database = {
         Returns: string
       }
       reset_demo_data: { Args: never; Returns: undefined }
+      set_room_clean: {
+        Args: { p_clean: boolean; p_room: string }
+        Returns: undefined
+      }
     }
     Enums: {
       audit_status: "open" | "closed"

@@ -118,7 +118,9 @@ async function main() {
   for (const s of staff) {
     const { data, error } = await db.auth.admin.createUser({
       email: s.email, password: PASSWORD, email_confirm: true,
-      user_metadata: { full_name: s.full_name, role: s.role, branch_id: s.branch ? branchId[s.branch] : null },
+      user_metadata: { full_name: s.full_name },
+      // role/branch live in app metadata: only the service role can set it
+      app_metadata: { role: s.role, branch_id: s.branch ? branchId[s.branch] : null },
     });
     if (error) fail(`create ${s.email}`, error);
     userId[s.email] = data.user.id;
@@ -126,14 +128,16 @@ async function main() {
   for (const g of guests) {
     const { data, error } = await db.auth.admin.createUser({
       email: g.email, password: PASSWORD, email_confirm: true,
-      user_metadata: { full_name: g.full_name, role: "guest", phone: g.phone },
+      user_metadata: { full_name: g.full_name, phone: g.phone },
+      app_metadata: { role: "guest" },
     });
     if (error) fail(`create ${g.email}`, error);
     userId[g.email] = data.user.id;
   }
 
   console.log("→ reservations: one in-house guest with charges, a few upcoming");
-  const today = new Date();
+  // "today" in hotel time (WAT), as midnight UTC so the date arithmetic below stays exact
+  const today = new Date(`${new Intl.DateTimeFormat("en-CA", { timeZone: "Africa/Lagos" }).format(new Date())}T00:00:00Z`);
   const iso = (d: Date) => d.toISOString().slice(0, 10);
   const addDays = (d: Date, n: number) => new Date(d.getTime() + n * 86400000);
 
@@ -141,7 +145,7 @@ async function main() {
   const desk = createClient(url!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? key!, { auth: { persistSession: false } });
   const { error: signInErr } = await desk.auth.signInWithPassword({ email: "frontdesk.abuja@lumaana.demo", password: PASSWORD });
   if (signInErr) fail("sign in as front desk", signInErr);
-    const hq = createClient(url!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? key!, { auth: { persistSession: false } });
+  const hq = createClient(url!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? key!, { auth: { persistSession: false } });
   const { error: hqErr } = await hq.auth.signInWithPassword({ email: "hq@lumaana.demo", password: PASSWORD });
   if (hqErr) fail("sign in as HQ", hqErr);
 

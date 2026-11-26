@@ -5,7 +5,7 @@ export type Role = Enums<"user_role">;
 /** Where each role lands after sign-in. */
 export const HOME_FOR_ROLE: Record<Role, string> = {
   guest: "/stay",
-  hq_admin: "/admin",
+  hq_admin: "/admin/reports",
   branch_admin: "/admin",
   front_desk: "/front-desk",
   procurement: "/procurement",
